@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 开启注解扫描 -->
+    <context:component-scan base-package="com.itheima.web"/>
+
+    <!-- 视图解析器对象 -->
+   <!-- <bean id="internalResourceViewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>-->
+
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="2097152"/>
+    </bean>
+
+
+    <!--前端控制器，哪些静态资源不拦截-->
+    <mvc:resources location="/images/" mapping="/images/**"/>
+    <mvc:resources location="/js/" mapping="/js/**"/>
+
+    <bean class="com.itheima.utils.MyExceptionHandler"/>
+
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/account/*"/>
+            <bean class="com.itheima.utils.MyHandlerInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+    <!-- 开启SpringMVC框架注解的支持 -->
+    <mvc:annotation-driven />
+
+
+
+
+    <bean id="daoFactory1" class="com.itheima.factory.DaoFactory">
+        <constructor-arg name="daoClass" value="com.itheima.dao.IAccountDao"/>
+    </bean>
+
+    <bean id="accountDao" factory-bean="daoFactory1" factory-method="createDao"></bean>
+
+    <bean id="accountService1" class="com.itheima.service.impl.AccountServiceImpl" >
+        <property name="iAccountDao" ref="accountDao"/>
+    </bean>
+
+
+    <bean id="daoFactory2" class="com.itheima.factory.DaoFactory">
+        <constructor-arg name="daoClass" value="com.itheima.dao.IUserDao"/>
+    </bean>
+
+    <bean id="userDao" factory-bean="daoFactory2" factory-method="createDao"></bean>
+
+    <bean id="userService" class="com.itheima.service.impl.UserServiceImpl">
+         <property name="userDao" ref="userDao"/>
+    </bean>
+
+
+
+
+
+
+</beans>
