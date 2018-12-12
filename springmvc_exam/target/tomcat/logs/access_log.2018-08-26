@@ -1,3 +1,0 @@
-0:0:0:0:0:0:0:1 - - [26/Aug/2018:00:00:13 +0800] "POST /account/addAccount HTTP/1.1" 302 - http-bio-8089-exec-10 13
-0:0:0:0:0:0:0:1 - - [26/Aug/2018:00:00:13 +0800] "GET /account/findAll HTTP/1.1" 200 972 http-bio-8089-exec-10 2
-0:0:0:0:0:0:0:1 - - [26/Aug/2018:00:00:13 +0800] "GET /images/0aa139-150F9155931.jpg HTTP/1.1" 200 135502 http-bio-8089-exec-10 12
