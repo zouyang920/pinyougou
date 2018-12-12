@@ -1,0 +1,31 @@
+品优购第10天总结
+(1)完善pinyougou-portal-web 搜索页面
+    a>业务：根据关键字来搜索
+	  *页面js逻辑
+	    ng-model="searchMap.keyword"  ng-click="search()"   
+	   返回的resultMap.rows ng-repeat="item in resultMap.rows"
+	  *后台逻辑
+	     SoredPage<Item> page=solrTemplate.query(SimpleQuery(Criteria))
+		 page.getContent();请求第几页的记录
+    b>业务：高亮显示标题
+	  *后台
+	      HighLightSimpleQuery(设置Criteria,设置highLightoptions)---->SolrTemplate.queryForHighLightPage(HighLightSimpleQuery)
+	      -->HighlightPage--->List<HighlightEntry<Item>>--->从一个HighlightEntry中获取List<Highlight>--->从Highlight拿到List<String> snipplets
+	      item.setTitle(snipplets[0])
+	   *前台引发一个问题：高亮的标签没有被浏览器识别
+	     该问题是由于angular把外来的html标签内容视为不安全的，所以在页面的某一个元素上绑定该内容的时候，浏览器无法去加载该标签。
+		 自定义过滤器：app.filter("过滤器名称",function(){过滤器逻辑})   使用在表达式{{数据 | 自定义过滤器名称}}  或者指令中使用
+		 $sce服务和ng-bind-html指令使用：$sce为angularjs的上下文转义服务用来对绑定的html、css等资源告诉angular是值得信任的。
+	c>业务：搜索商品分类
+	   *通过solr中的group分组查询来确定用户输入的关键字的分类的所有值
+	      GroupPage groupPage=solrTemplate.query(SimpleQuery(Criteria+GroupOptions));
+		  groupPage--->GroupResult---> Page<GroupEntry<TbItem>>-->List<GroupEntry>---->遍历得到GroupEntry
+		  注意：这里使用了solr中的group分组查询
+		  类似sql语句：
+		     SELECT * FROM tb_item WHERE title LIKE '%皮鞭%';
+		     SELECT COUNT(1),category FROM (SELECT * FROM tb_item WHERE title LIKE '%皮鞭%') ret GROUP BY category;
+
+	d>业务：根据搜索的商品分类确定品牌和规格
+	   *根据关键字搜索的时候需要把分类+品牌+规格属性名+规格选项展示出来跟用户条件搜索
+	   *实现的思路：在查询商品列表的时候进行缓存，查询数据库，使用redis hash缓存
+	   (hashkey=分类名称,hashvalue=模板id),(hashkey=typeId,hashvalue=品牌),(hashkey=typeId,hashvalue=规格)
