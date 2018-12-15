@@ -1,0 +1,6 @@
+  <bean id="queueTextDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="pinyougou_queue_solr"/>
+   </bean>
+
+
+   发送方和接收方的Destination的constructor-arg value值要一致
